@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Assistente Inteligente</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      h1 {
+        color: #333;
+      }
+      form {
+        margin: 20px 0;
+      }
+      input[type="text"] {
+        padding: 10px;
+        width: 300px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      input[type="submit"] {
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .response {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        width: 400px;
+        text-align: center;
+      }
+      .response p {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Assistente Inteligente</h1>
+
+    {% if not_found %}
+    <!-- Caso a pergunta não seja encontrada -->
+    <div class="response">
+      <p>Não encontrei uma resposta para:</p>
+      <p><strong>{{ question }}</strong></p>
+      <p>Por favor, insira a resposta abaixo:</p>
+      <form action="/learn" method="post">
+        <input type="hidden" name="question" value="{{ question }}" />
+        <input
+          type="text"
+          name="answer"
+          placeholder="Digite a resposta"
+          required
+        />
+        <br /><br />
+        <input type="submit" value="Enviar" />
+      </form>
+    </div>
+
+    {% elif answer %}
+    <!-- Caso uma resposta seja encontrada -->
+    <div class="response">
+      <p><strong>Pergunta feita:</strong> {{ question }}</p>
+      <p>
+        <strong>Melhor correspondência encontrada:</strong> {{ matched_question
+        }}
+      </p>
+      <p><strong>Resposta:</strong> {{ answer }}</p>
+      <form action="/" method="get" style="display: inline">
+        <input type="submit" value="Fazer outra pergunta" />
+      </form>
+      <form action="/adjust" method="post" style="display: inline">
+        <input type="hidden" name="original_question" value="{{ question }}" />
+        <input type="submit" value="Ajustar Resposta" />
+      </form>
+    </div>
+
+    {% elif adjust %}
+    <!-- Formulário para adicionar uma nova resposta -->
+    <div class="response">
+      <p>Adicionar uma nova resposta para a pergunta:</p>
+      <p><strong>{{ question }}</strong></p>
+      <form action="/update" method="post">
+        <input type="hidden" name="question" value="{{ question }}" />
+        <input
+          type="text"
+          name="new_answer"
+          placeholder="Digite a nova resposta"
+          required
+        />
+        <br /><br />
+        <input type="submit" value="Adicionar Resposta" />
+      </form>
+    </div>
+
+    {% elif updated %}
+    <!-- Mensagem de confirmação de atualização -->
+    <div class="response">
+      <p>A resposta foi atualizada com sucesso!</p>
+      <form action="/" method="get">
+        <br />
+        <input type="submit" value="Fazer outra pergunta" />
+      </form>
+    </div>
+
+    {% elif learned %}
+    <!-- Caso o sistema aprenda algo novo -->
+    <div class="response">
+      <p>Obrigado! Aprendi algo novo.</p>
+      <form action="/" method="get">
+        <br />
+        <input type="submit" value="Fazer outra pergunta" />
+      </form>
+    </div>
+
+    {% elif added %}
+    <!-- Mensagem de confirmação de adição -->
+    <div class="response">
+      <p>A nova resposta foi adicionada com sucesso!</p>
+      <form action="/" method="get">
+        <br />
+        <input type="submit" value="Fazer outra pergunta" />
+      </form>
+    </div>
+
+    {% else %}
+    <!-- Página inicial: Formulário para fazer perguntas -->
+    <form action="/" method="post">
+      <input
+        type="text"
+        name="question"
+        placeholder="Faça sua pergunta"
+        required
+      />
+      <br /><br />
+      <input type="submit" value="Perguntar" />
+    </form>
+    {% endif %}
+  </body>
+</html>
